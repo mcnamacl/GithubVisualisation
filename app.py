@@ -9,9 +9,13 @@ userName = g.get_user().name
 
 @app.route("/")
 def index():
+    followers = getFollowers()
     return render_template("index.html")
 
 def getFollowers():
+    followers = {}
     index = 0
     for follower in g.get_user().get_followers():
-        print(follower, file=sys.stderr)
+        followers[str(index)] = follower
+        index = index + 1
+    return followers
