@@ -5,6 +5,16 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet" />
 <div class="table-responsive">
     <table id="follower" class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>repo</th>
+            </tr>
+        </thead>
+        {% for repo in repos %}
+            <tr>
+                <td>{{ repos[repo] }}</td>
+            </tr>
+        {% endfor %}
     </table>
 </div>
 
