@@ -19,3 +19,10 @@ def getRepos():
         repos[str(index)] = repo.name
         index = index + 1
     return repos
+
+def getFollowers():
+    followers = {}
+    index = 0
+    for follower in g.get_user().get_followers():
+        followers[str(index)] = follower
+        index = index + 1
