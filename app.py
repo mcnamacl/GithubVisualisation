@@ -9,8 +9,8 @@ userName = g.get_user().name
 
 @app.route("/")
 def index():
-    repos = getRepos(g.get_user())
-    followers = getFollowers(g.get_user())
+    repos, numOfRepos = getRepos(g.get_user())
+    followers, numOfFollowers = getFollowers(g.get_user())
     return render_template("index.html", repos=repos)
 
 def getRepos(user):
@@ -19,7 +19,7 @@ def getRepos(user):
     for repo in user.get_repos():
         repos[str(index)] = repo.name
         index = index + 1
-    return repos
+    return repos, index
 
 def getFollowers(user):
     followers = {}
@@ -27,3 +27,4 @@ def getFollowers(user):
     for follower in user.get_followers():
         followers[str(index)] = follower
         index = index + 1
+    return followers, index
