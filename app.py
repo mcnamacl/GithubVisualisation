@@ -13,14 +13,19 @@ userName = g.get_user().name
 def index():
     repos, numOfRepos = getRepos(g.get_user())
     followers, numOfFollowers = getFollowers(g.get_user())
+    corrFollwersRepos = corrFollowersRepos(g.get_user())
     return render_template("index.html", repos=repos)
 
 def corrFollowersRepos(user):
     repos, numOfRepos = getRepos(user)
     followers, numOfFollowers = getFollowers(user)
+    result = {}
     for follower in followers:
         _, numFollower = getFollowers(followers[follower])
         _, numRepo = getRepos(followers[follower])
+        tmp = {numFollower : numRepo}
+        result.update(tmp)
+    print(json.dumps(result), file=sys.stderr)
 
 def getRepos(user):
     repos = {}
