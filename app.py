@@ -11,11 +11,11 @@ userName = g.get_user().name
 
 @app.route("/")
 def index():
-    repos = getRepos(g.get_user())
-    corrFollowersRepos(g.get_user())
-    topRepos = getTopRepos()
-    print(topRepos.totalCount, file=sys.stderr)
-    return render_template("index.html", repos=repos)
+    #repos = getRepos(g.get_user())
+    #corrFollowersRepos(g.get_user())
+    #topRepos = getTopRepos()
+    chordChartFour()
+    return render_template("index.html")
 
 def corrFollowersRepos(user):
     followers = getFollowers(user)
@@ -37,9 +37,6 @@ def getRepos(user):
         index = index + 1
     return repos
 
-def getTopRepos():
-    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')
-
 def getFollowers(user):
     followers = {}
     index = 0
@@ -47,3 +44,31 @@ def getFollowers(user):
         followers[str(index)] = follower
         index = index + 1
     return followers
+
+def getTopRepos():
+    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:100]
+
+def getTopUsersByFollowers():
+    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:100]
+
+def getTopUsersByStars():
+    return g.search_users(query='stars:>=500', sort='stars', order='desc')[:100]
+
+def chordChartFour():
+    topRepos = getTopRepos()
+    topUsersFollowers = getTopUsersByFollowers()
+    topUsersStars = getTopUsersByStars()
+    repoLanguages = {}
+    index = 0
+    for repo in topRepos:
+        language = repo.language
+        if language not in repoLanguages:
+            repoLanguages[language] = 1
+        else:
+            num = repoLanguages[language]
+            num = num + 1
+            repoLanguages[language] = num
+        index = index + 1
+        if index == 500:
+            break
+    print(json.dumps(repoLanguages), file=sys.stderr)
