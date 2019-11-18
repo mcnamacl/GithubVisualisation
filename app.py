@@ -1,6 +1,7 @@
 from github import Github
 from flask import Flask, request, render_template, jsonify
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
+import collections
 import sys
 import json
 
@@ -51,24 +52,30 @@ def getTopRepos():
 def getTopUsersByFollowers():
     return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:100]
 
-def getTopUsersByStars():
-    return g.search_users(query='stars:>=500', sort='stars', order='desc')[:100]
+def languagesInRepos(repos):
+    languages = {}
+    for repo in repos:
+        language = repo.language
+        if language not in languages:
+            languages[language] = 1
+        else:
+            num = languages[language]
+            num = num + 1
+            languages[language] = num
+    return languages
+
+def getUserTopLanguage(user):
+    repos = user.get_repos()[:10]
+    languages = languagesInRepos(repos)
+    sortedLanguages = OrderedDict(sorted(languages.items(), key=lambda x: x[1]))
+    return sortedLanguages.popitem()
 
 def chordChartFour():
     topRepos = getTopRepos()
-    topUsersFollowers = getTopUsersByFollowers()
-    topUsersStars = getTopUsersByStars()
-    repoLanguages = {}
-    index = 0
-    for repo in topRepos:
-        language = repo.language
-        if language not in repoLanguages:
-            repoLanguages[language] = 1
-        else:
-            num = repoLanguages[language]
-            num = num + 1
-            repoLanguages[language] = num
-        index = index + 1
-        if index == 500:
-            break
+    topUsers = getTopUsersByFollowers()
+    repoLanguages = languagesInRepos(topRepos)
+
+    for topUser in topUsers:
+        getUserTopLanguage(topUser)
+
     print(json.dumps(repoLanguages), file=sys.stderr)
