@@ -1,5 +1,5 @@
 from github import Github
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, Counter
 import collections
 import sys
 import json
@@ -53,18 +53,8 @@ def languagesInRepos(repos):
             languages[language] = num
     return languages
 
-def getUserTopLanguage(user):
-    repos = user.get_repos()[:10]
-    languages = languagesInRepos(repos)
-    sortedLanguages = OrderedDict(sorted(languages.items(), key=lambda x: x[1]))
-    return sortedLanguages.popitem()
-
-def chordChartFour():
-    topRepos = getTopRepos()
-    topUsers = getTopUsersByFollowers()
-    repoLanguages = languagesInRepos(topRepos)
+def languagesByUsers(topUsers):
     userLanguages = {}
-
     for topUser in topUsers:
         language = getUserTopLanguage(topUser)
         language = language[0]
@@ -74,15 +64,85 @@ def chordChartFour():
             num = userLanguages[language]
             num = num + 1
             userLanguages[language] = num
+    return userLanguages
 
-    repoLanguages = OrderedDict(sorted(repoLanguages.items(), key=lambda x: x[1], reverse=True))
+def getUserTopLanguage(user):
+    repos = user.get_repos()[:10]
+    languages = languagesInRepos(repos)
+    sortedLanguages = OrderedDict(sorted(languages.items(), key=lambda x: x[1]))
+    return sortedLanguages.popitem()
+
+def getRepoTopCompanies(repos):
+    companies = {}
+    for repo in repos:
+        company = getCompanyName(str(repo.organization))
+        if company not in companies:
+            companies[company] = 1
+        else:
+            num = companies[company]
+            num = num + 1
+            companies[company] = num
+    return companies
+
+def getUserTopCompanies(topUsers):
+    companies = {}
+    for user in topUsers:
+        numOfCompanies = user.get_orgs().totalCount
+        if numOfCompanies is not 0:
+            company = getCompanyName(str(user.get_orgs()[0]))
+        else:
+            company = 'None'
+        if company not in companies:
+            companies[company] = 1
+        else:
+            num = companies[company]
+            num = num + 1
+            companies[company] = num
+    return companies
+
+def getCompanyName(company):
+    company = company.replace('Organization(login=\"', '')
+    return company.replace('\")', '')
+
+def chordChart():
+    topRepos = getTopRepos()
+    topUsers = getTopUsersByFollowers()
+
+    repoLanguages = languagesInRepos(topRepos)
+    userLanguages = languagesByUsers(topUsers)
+    
+    combinedLanguages = Counter(repoLanguages) + Counter(userLanguages)
+
+    combinedLanguages = OrderedDict(sorted(combinedLanguages.items(), key=lambda x: x[1], reverse=True))
     userLanguages = OrderedDict(sorted(userLanguages.items(), key=lambda x: x[1], reverse=True))
+    repoLanguages = OrderedDict(sorted(repoLanguages.items(), key=lambda x: x[1], reverse=True))
+
+    topRepoCompanies = getRepoTopCompanies(topRepos)
+    topUserCompanies = getUserTopCompanies(topUsers)
+
+    combinedCompanies = Counter(topRepoCompanies) + Counter(topUserCompanies)
+
+    combinedCompanies = OrderedDict(sorted(combinedCompanies.items(), key=lambda x: x[1], reverse=True))
+    topRepoCompanies = OrderedDict(sorted(topRepoCompanies.items(), key=lambda x: x[1], reverse=True))
+    topUserCompanies = OrderedDict(sorted(topUserCompanies.items(), key=lambda x: x[1], reverse=True))
 
     with open('repoLanguages.txt', 'w') as outfile:
         json.dump(repoLanguages, outfile)
 
     with open('userLanguages.txt', 'w') as outfile:
         json.dump(userLanguages, outfile)
+    
+    with open('combinedLanugages.txt', 'w') as outfile:
+        json.dump(combinedLanguages, outfile)
+
+    with open('repoCompanies.txt', 'w') as outfile:
+        json.dump(topRepoCompanies, outfile)
+
+    with open('userCompanies.txt', 'w') as outfile:
+        json.dump(topUserCompanies, outfile)
+    
+    with open('combinedCompanies.txt', 'w') as outfile:
+        json.dump(combinedCompanies, outfile)
 
 if __name__ == '__main__':
-    chordChartFour()
+    chordChart()

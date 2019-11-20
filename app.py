@@ -9,13 +9,16 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    createFlowMatrix()
     return render_template("index.html")
 
 def createFlowMatrix():
-    repoLanguages = {}
-    with open('repoLanguages.txt') as json_file:
-        repoLanguages = json.load(json_file)
+    repoLanguages = readInFile('repoLanguages.txt')
+    userLanguages = readInFile('userLanguages.txt')
 
-    userLanguages = {}
-    with open('userLanguages.txt') as json_file:
-        userLanguages = json.load(json_file)
+    
+
+
+def readInFile(fileName):
+    with open(fileName) as json_file:
+        return json.load(json_file)
