@@ -36,10 +36,10 @@ def getFollowers(user):
     return followers
 
 def getTopRepos():
-    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:10]
+    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:300]
 
 def getTopUsersByFollowers():
-    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:10]
+    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:300]
 
 def languagesInRepos(repos):
     languages = {}
@@ -127,6 +127,7 @@ def getCompanyLanguages(topRepos, topUsers):
         else:
             company = 'None'
         language = getUserTopLanguage(user)
+        language = language[0]
         if company not in compLang:
             compLang[company] = {}
             compLang[company][language] = 1
@@ -137,7 +138,7 @@ def getCompanyLanguages(topRepos, topUsers):
             num = num + 1
             compLang[company][language] = num
 
-    print(compLang)
+    return compLang
 
 def chordChart():
     topRepos = getTopRepos()
@@ -145,41 +146,46 @@ def chordChart():
 
     getCompanyLanguages(topRepos, topUsers)
 
-    # repoLanguages = languagesInRepos(topRepos)
-    # userLanguages = languagesByUsers(topUsers)
+    repoLanguages = languagesInRepos(topRepos)
+    userLanguages = languagesByUsers(topUsers)
     
-    # combinedLanguages = Counter(repoLanguages) + Counter(userLanguages)
+    combinedLanguages = Counter(repoLanguages) + Counter(userLanguages)
 
-    # combinedLanguages = OrderedDict(sorted(combinedLanguages.items(), key=lambda x: x[1], reverse=True))
-    # userLanguages = OrderedDict(sorted(userLanguages.items(), key=lambda x: x[1], reverse=True))
-    # repoLanguages = OrderedDict(sorted(repoLanguages.items(), key=lambda x: x[1], reverse=True))
+    combinedLanguages = OrderedDict(sorted(combinedLanguages.items(), key=lambda x: x[1], reverse=True))
+    userLanguages = OrderedDict(sorted(userLanguages.items(), key=lambda x: x[1], reverse=True))
+    repoLanguages = OrderedDict(sorted(repoLanguages.items(), key=lambda x: x[1], reverse=True))
 
-    # topRepoCompanies = getRepoTopCompanies(topRepos)
-    # topUserCompanies = getUserTopCompanies(topUsers)
+    topRepoCompanies = getRepoTopCompanies(topRepos)
+    topUserCompanies = getUserTopCompanies(topUsers)
 
-    # combinedCompanies = Counter(topRepoCompanies) + Counter(topUserCompanies)
+    combinedCompanies = Counter(topRepoCompanies) + Counter(topUserCompanies)
 
-    # combinedCompanies = OrderedDict(sorted(combinedCompanies.items(), key=lambda x: x[1], reverse=True))
-    # topRepoCompanies = OrderedDict(sorted(topRepoCompanies.items(), key=lambda x: x[1], reverse=True))
-    # topUserCompanies = OrderedDict(sorted(topUserCompanies.items(), key=lambda x: x[1], reverse=True))
+    combinedCompanies = OrderedDict(sorted(combinedCompanies.items(), key=lambda x: x[1], reverse=True))
+    topRepoCompanies = OrderedDict(sorted(topRepoCompanies.items(), key=lambda x: x[1], reverse=True))
+    topUserCompanies = OrderedDict(sorted(topUserCompanies.items(), key=lambda x: x[1], reverse=True))
 
-    # with open('repoLanguages.txt', 'w') as outfile:
-    #     json.dump(repoLanguages, outfile)
+    corrCompanyLanguages = getCompanyLanguages(topRepos, topUsers)
 
-    # with open('userLanguages.txt', 'w') as outfile:
-    #     json.dump(userLanguages, outfile)
+    with open('repoLanguages.txt', 'w') as outfile:
+        json.dump(repoLanguages, outfile)
+
+    with open('userLanguages.txt', 'w') as outfile:
+        json.dump(userLanguages, outfile)
     
-    # with open('combinedLanugages.txt', 'w') as outfile:
-    #     json.dump(combinedLanguages, outfile)
+    with open('combinedLanugages.txt', 'w') as outfile:
+        json.dump(combinedLanguages, outfile)
 
-    # with open('repoCompanies.txt', 'w') as outfile:
-    #     json.dump(topRepoCompanies, outfile)
+    with open('repoCompanies.txt', 'w') as outfile:
+        json.dump(topRepoCompanies, outfile)
 
-    # with open('userCompanies.txt', 'w') as outfile:
-    #     json.dump(topUserCompanies, outfile)
+    with open('userCompanies.txt', 'w') as outfile:
+        json.dump(topUserCompanies, outfile)
     
-    # with open('combinedCompanies.txt', 'w') as outfile:
-    #     json.dump(combinedCompanies, outfile)
+    with open('combinedCompanies.txt', 'w') as outfile:
+        json.dump(combinedCompanies, outfile)
+
+    with open('corrCompanyLanguages.txt', 'w') as outfile:
+        json.dump(corrCompanyLanguages, outfile)    
 
 if __name__ == '__main__':
     chordChart()
