@@ -13,11 +13,16 @@ def index():
     return render_template("index.html")
 
 def createFlowMatrix():
-    repoLanguages = readInFile('repoLanguages.txt')
+    combinedLanguages = readInFile('combinedLanguages.txt')
+    combinedCompanies = readInFile('combinedCompanies.txt')
+
+def createCompanyPieChart():
+    repoCompanies = readInFile('repoCompanies.txt')
+    userCompanies = readInFile('userCompanies.txt')
+
+def createLanguagePieChart():
     userLanguages = readInFile('userLanguages.txt')
-
-    
-
+    repoLanguages = readInFile('repoLanguages.txt')
 
 def readInFile(fileName):
     with open(fileName) as json_file:
