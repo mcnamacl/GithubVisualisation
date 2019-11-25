@@ -9,8 +9,14 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    createFlowMatrix()
+    matix = createFlowMatrix()
     return render_template("index.html")
+
+@app.route("/piecharts")
+def picecharts():
+    compPiechartVals = createCompanyPieChart()
+    langPiechartVales = createLanguagePieChart()
+    return render_template("piecharts.html")
 
 def createFlowMatrix():
     combinedLanguages = readInFile('combinedLanguages.txt')
