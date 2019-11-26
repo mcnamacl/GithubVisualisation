@@ -16,11 +16,21 @@ def index():
 def picecharts():
     compPiechartVals = createCompanyPieChart()
     langPiechartVales = createLanguagePieChart()
+    combinedPiechart = createCombinedPieChart()
     return render_template("piecharts.html")
 
 def createFlowMatrix():
-    combinedLanguages = readInFile('combinedLanguages.txt')
-    combinedCompanies = readInFile('combinedCompanies.txt')
+    corrCompLang = readInFile('corrCompanyLanguages.txt')
+    getMaxNumberLanguageTuples(corrCompLang)
+
+def getMaxNumberLanguageTuples(compLangArr):
+    greatestLen = 0
+    biggestComp = ""
+    for comp in compLangArr:
+        if len(compLangArr[comp]) > greatestLen:
+            greatestLen = len(compLangArr[comp])
+            biggestComp = comp
+    print(biggestComp, file=sys.stderr)
 
 def createCompanyPieChart():
     repoCompanies = readInFile('repoCompanies.txt')
@@ -29,6 +39,10 @@ def createCompanyPieChart():
 def createLanguagePieChart():
     userLanguages = readInFile('userLanguages.txt')
     repoLanguages = readInFile('repoLanguages.txt')
+
+def createCombinedPieChart():
+    combinedLanguages = readInFile('combinedLanguages.txt')
+    combinedCompanies = readInFile('combinedCompanies.txt')
 
 def readInFile(fileName):
     with open(fileName) as json_file:
