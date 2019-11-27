@@ -30,7 +30,28 @@ def getMaxNumberLanguageTuples(compLangArr):
         if len(compLangArr[comp]) > greatestLen:
             greatestLen = len(compLangArr[comp])
             biggestComp = comp
-    print(biggestComp, file=sys.stderr)
+    topTenLanguages = getTopTenLanguages(compLangArr)
+    
+# Gets top ten language by use per company
+def getTopTenLanguages(compLangArr):
+    topLanguages = {}
+    for comp in compLangArr:
+        for lang in compLangArr[comp]:
+            if lang not in topLanguages:
+                topLanguages[lang] = 1
+            else:
+                num = topLanguages[lang]
+                num = num + 1
+                topLanguages[lang] = num
+    sortedLanguages = OrderedDict(sorted(topLanguages.items(), key=lambda x: x[1], reverse = True))
+    topTenLanguages = []
+    index = 0
+    for lang in sortedLanguages:
+        topTenLanguages.append(lang)
+        index = index + 1
+        if index == 10:
+            break
+    return topTenLanguages
 
 def createCompanyPieChart():
     repoCompanies = readInFile('repoCompanies.txt')
