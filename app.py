@@ -20,17 +20,23 @@ def picecharts():
     return render_template("piecharts.html")
 
 def createFlowMatrix():
-    corrCompLang = readInFile('corrCompanyLanguages.txt')
-    getMaxNumberLanguageTuples(corrCompLang)
-
-def getMaxNumberLanguageTuples(compLangArr):
-    greatestLen = 0
-    biggestComp = ""
-    for comp in compLangArr:
-        if len(compLangArr[comp]) > greatestLen:
-            greatestLen = len(compLangArr[comp])
-            biggestComp = comp
+    compLangArr = readInFile('corrCompanyLanguages.txt')
     topTenLanguages = getTopTenLanguages(compLangArr)
+    topTenCompanies = getTopTenCompanies(compLangArr)
+    jsonMatrix = {}
+    rowIndex = 1
+    for comp in topTenCompanies:
+        jsonMatrix[str(rowIndex)] = []
+        rowList = []
+        for lang in topTenLanguages:
+            if lang in compLangArr[comp]:
+                num = compLangArr[comp][lang]
+                rowList.append(num)
+            else:
+                rowList.append(0)
+
+    print(json.dumps(jsonMatrix))
+
     
 # Gets top ten language by use per company
 def getTopTenLanguages(compLangArr):
@@ -52,6 +58,21 @@ def getTopTenLanguages(compLangArr):
         if index == 10:
             break
     return topTenLanguages
+
+# Gets top ten companies by variety
+def getTopTenCompanies(compLangArr):
+    companies = {}
+    for comp in compLangArr:
+        companies[comp] = len(compLangArr[comp])
+    sortedLanguages = OrderedDict(sorted(companies.items(), key=lambda x: x[1], reverse = True))
+    topTenCompanies = []
+    index = 0
+    for lang in sortedLanguages:
+        topTenCompanies.append(lang)
+        index = index + 1
+        if index == 10:
+            break
+    return topTenCompanies
 
 def createCompanyPieChart():
     repoCompanies = readInFile('repoCompanies.txt')
