@@ -34,8 +34,10 @@ def createFlowMatrix():
                 rowList.append(num)
             else:
                 rowList.append(0)
+        jsonMatrix[str(rowIndex)].append(rowList)
+        rowIndex = rowIndex + 1
 
-    print(json.dumps(jsonMatrix))
+    print(json.dumps(jsonMatrix), file=sys.stderr)
 
     
 # Gets top ten language by use per company
