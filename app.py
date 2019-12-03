@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    matix = createFlowMatrix()
-    return render_template("index.html")
+    matrix = createFlowMatrix()
+    return render_template("index.html", matrix=matrix)
 
 @app.route("/piecharts")
 def picecharts():
@@ -37,9 +37,8 @@ def createFlowMatrix():
         jsonMatrix[str(rowIndex)].append(rowList)
         rowIndex = rowIndex + 1
 
-    print(json.dumps(jsonMatrix), file=sys.stderr)
+    return jsonMatrix
 
-    
 # Gets top ten language by use per company
 def getTopTenLanguages(compLangArr):
     topLanguages = {}

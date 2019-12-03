@@ -21,13 +21,41 @@
         .append("g")
         .attr("transform", "translate(220,220)")
 
-    // create input data: a square matrix that provides flow between entities
-    var matrix = [
-        [0, 0, 5, 15], //X
-        [0, 0, 15, 20], //Y
-        [5, 15, 0, 0],  //B
-        [15, 5, 0, 0] //A
-    ];
+    topRightMatrix = JSON.parse('{{ matrix | tojson | safe }}');
+
+    var matrix = new Array(20);
+    
+    for (var i = 0; i < matrix.length; i++){
+        matrix[i] = new Array(20);
+    }
+
+    for (var i = 0; i < 10; i++){
+        for (var j = 0; j < 10; j++){
+            matrix[i][j] = 0;
+        }
+    }
+
+    for (var i = 10; i < 20; i++){
+        for (var j = 10; j < 20; j++){
+            matrix[i][j] = 0;
+        }
+    }
+    
+    var index = 0;
+    for (x in topRightMatrix){
+        for (var j = 10; j < 20; j++){
+            matrix[index][j] = topRightMatrix[x][0][j-10];
+        }
+        index++;
+    }
+    
+    var index = 10;
+    for (x in topRightMatrix){
+        for (var j = 0; j < 10; j++){
+            matrix[index][j] = topRightMatrix[x][0][j];
+        }
+        index++;
+    }
 
     // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
     var res = d3.chord()
