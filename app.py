@@ -9,8 +9,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    matrix = createFlowMatrix()
-    return render_template("index.html", matrix=matrix)
+    matrix, xAxis, yAxis = createFlowMatrix()
+    labels = xAxis + yAxis
+    return render_template("index.html", matrix=matrix, labels=labels)
 
 @app.route("/piecharts")
 def picecharts():
@@ -24,7 +25,10 @@ def createFlowMatrix():
     topTenLanguages = getTopTenLanguages(compLangArr)
     topTenCompanies = getTopTenCompanies(compLangArr)
     jsonMatrix = {}
+    jsonCompanies = []
+    jsonLanguages = []
     rowIndex = 1
+    gotLang = False
     for comp in topTenCompanies:
         jsonMatrix[str(rowIndex)] = []
         rowList = []
@@ -34,10 +38,14 @@ def createFlowMatrix():
                 rowList.append(num)
             else:
                 rowList.append(0)
+            if not gotLang:
+                jsonLanguages.append(lang)
         jsonMatrix[str(rowIndex)].append(rowList)
         rowIndex = rowIndex + 1
+        jsonCompanies.append(comp)
+        gotLang = True
 
-    return jsonMatrix
+    return jsonMatrix, jsonCompanies, jsonLanguages
 
 # Gets top ten language by use per company
 def getTopTenLanguages(compLangArr):
