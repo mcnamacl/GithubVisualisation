@@ -5,15 +5,53 @@
 <script src="https://d3js.org/d3.v4.js"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<form action="/piecharts">
+<form action="/">
     <button type="submit" onclick="" style="float: right" class="btn"><i class="fa fa-home"></i> Home</button>
 </form>
 
-<div id="chord_chart"></div>
+<div style="text-align:center;" id="chord_chart"></div>
 
 <script>
+    topRightMatrix = JSON.parse('{{ matrix | tojson | safe }}');
 
-    // create the svg area
+    var matrix = new Array(20);
+
+    for (var i = 0; i < matrix.length; i++) {
+        matrix[i] = new Array(20);
+    }
+
+    for (var i = 0; i < 10; i++) {
+        for (var j = 0; j < 10; j++) {
+            matrix[i][j] = 0;
+        }
+    }
+
+    for (var i = 10; i < 20; i++) {
+        for (var j = 10; j < 20; j++) {
+            matrix[i][j] = 0;
+        }
+    }
+
+    var index = 0;
+    for (x in topRightMatrix) {
+        for (var j = 10; j < 20; j++) {
+            matrix[index][j] = topRightMatrix[x][0][j - 10];
+        }
+        index++;
+    }
+
+    var index = 10;
+    for (x in topRightMatrix) {
+        for (var j = 0; j < 10; j++) {
+            matrix[index][j] = topRightMatrix[x][0][j];
+        }
+        index++;
+    }
+
+    console.log(matrix);
+
+    var colors = [ "#679983ff", "#77838cff", "	#e1f7d5ff", "#f1cbffff", "#ffbdbdff", "#b7effbff", "#c7f2ccff", "#eeb9a2ff", "#00c2c7ff", "#e18a7aff", "#005582ff", "#31668dff", "#d4aa78ff", "#fde725ff", "#fadbe0ff", "#abb1cfff", "#c5b9cdff", "#ffb554ff", "#9e3d64ff", "#daf8e3ff"];
+
     var svg = d3.select("#chord_chart")
         .append("svg")
         .attr("width", 440)
@@ -21,49 +59,13 @@
         .append("g")
         .attr("transform", "translate(220,220)")
 
-    topRightMatrix = JSON.parse('{{ matrix | tojson | safe }}');
-
-    var matrix = new Array(20);
-    
-    for (var i = 0; i < matrix.length; i++){
-        matrix[i] = new Array(20);
-    }
-
-    for (var i = 0; i < 10; i++){
-        for (var j = 0; j < 10; j++){
-            matrix[i][j] = 0;
-        }
-    }
-
-    for (var i = 10; i < 20; i++){
-        for (var j = 10; j < 20; j++){
-            matrix[i][j] = 0;
-        }
-    }
-    
-    var index = 0;
-    for (x in topRightMatrix){
-        for (var j = 10; j < 20; j++){
-            matrix[index][j] = topRightMatrix[x][0][j-10];
-        }
-        index++;
-    }
-    
-    var index = 10;
-    for (x in topRightMatrix){
-        for (var j = 0; j < 10; j++){
-            matrix[index][j] = topRightMatrix[x][0][j];
-        }
-        index++;
-    }
-
     // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
     var res = d3.chord()
-        .padAngle(0.05)     // padding between entities (black arc)
+        .padAngle(0.05)
         .sortSubgroups(d3.descending)
         (matrix)
 
-    // add the groups on the inner part of the circle
+    // add the groups on the outer part of the circle
     svg
         .datum(res)
         .append("g")
@@ -72,8 +74,6 @@
         .enter()
         .append("g")
         .append("path")
-        .style("fill", "grey")
-        .style("stroke", "black")
         .attr("d", d3.arc()
             .innerRadius(200)
             .outerRadius(210)
@@ -90,7 +90,7 @@
         .attr("d", d3.ribbon()
             .radius(200)
         )
-        .style("fill", "#69b3a2")
+        .style("fill", function (d) { return (colors[d.source.index]) }) // colors depend on the source group. Change to target otherwise.
         .style("stroke", "black");
 
 </script>
