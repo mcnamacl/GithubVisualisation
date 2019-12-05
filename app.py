@@ -7,22 +7,37 @@ import json
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     matrix, xAxis, yAxis = createFlowMatrix()
     labels = xAxis + yAxis
     return render_template("index.html", matrix=matrix, labels=labels)
 
-@app.route("/piecharts")
+
+@app.route("/piecharts", methods=["POST", "GET"])
 def picecharts():
-    compPiechart = createRepoCompanyPieChart()
-    langPiechart = createRepoLanguagePieChart()
-    combinedCompPiechart = createCombinedCompanyPieChart()
-    combinedLangPiechart = createCombinedLanguagePieChart()
-    return render_template("piecharts.html", compPiechart=compPiechart, langPiechart=langPiechart, combinedCompPiechart=combinedCompPiechart, combinedLangPiechart=combinedLangPiechart)
+    piechart = None
+    title = ""
+    if request.method == "POST":
+        piechartType = request.form.get("piechartChoice")
+        if piechartType == "compRepo":
+            piechart = createRepoCompanyPieChart()
+            title = "Top Repository Breakdown by Company"
+        elif piechartType == "langRepo":
+            piechart = createRepoLanguagePieChart()
+            title = "Top Repository Breakdown by Language"
+        elif piechartType == "combRepo":
+            piechart = createCombinedCompanyPieChart()
+            title = "Combined Top Repository/Top User Breakdown by Company"
+        elif piechartType == "combLang":
+            piechart = createCombinedLanguagePieChart()
+            title = "Combined Top Repository/Top User Breakdown by Language"
+    return render_template("piecharts.html", piechart=piechart, title=title)
+
 
 def createFlowMatrix():
-    compLangArr = readInFile('corrCompanyLanguages.txt')
+    compLangArr = readInFile("corrCompanyLanguages.txt")
     topTenLanguages = getTopTenLanguages(compLangArr)
     topTenCompanies = getTopTenCompanies(compLangArr)
     jsonMatrix = {}
@@ -48,6 +63,7 @@ def createFlowMatrix():
 
     return jsonMatrix, jsonCompanies, jsonLanguages
 
+
 # Gets top ten language by use per company
 def getTopTenLanguages(compLangArr):
     topLanguages = {}
@@ -59,7 +75,9 @@ def getTopTenLanguages(compLangArr):
                 num = topLanguages[lang]
                 num = num + 1
                 topLanguages[lang] = num
-    sortedLanguages = OrderedDict(sorted(topLanguages.items(), key=lambda x: x[1], reverse = True))
+    sortedLanguages = OrderedDict(
+        sorted(topLanguages.items(), key=lambda x: x[1], reverse=True)
+    )
     topTenLanguages = []
     index = 0
     for lang in sortedLanguages:
@@ -69,12 +87,15 @@ def getTopTenLanguages(compLangArr):
             break
     return topTenLanguages
 
+
 # Gets top ten companies by variety
 def getTopTenCompanies(compLangArr):
     companies = {}
     for comp in compLangArr:
         companies[comp] = len(compLangArr[comp])
-    sortedLanguages = OrderedDict(sorted(companies.items(), key=lambda x: x[1], reverse = True))
+    sortedLanguages = OrderedDict(
+        sorted(companies.items(), key=lambda x: x[1], reverse=True)
+    )
     topTenCompanies = []
     index = 0
     for lang in sortedLanguages:
@@ -84,17 +105,22 @@ def getTopTenCompanies(compLangArr):
             break
     return topTenCompanies
 
+
 def createRepoCompanyPieChart():
-    return readInFile('repoCompanies.txt')
+    return readInFile("repoCompanies.txt")
+
 
 def createRepoLanguagePieChart():
-    return readInFile('repoLanguages.txt')
+    return readInFile("repoLanguages.txt")
+
 
 def createCombinedCompanyPieChart():
-    return readInFile('combinedCompanies.txt')
+    return readInFile("combinedCompanies.txt")
+
 
 def createCombinedLanguagePieChart():
-    return readInFile('combinedLanguages.txt')
+    return readInFile("combinedLanguages.txt")
+
 
 def readInFile(fileName):
     with open(fileName) as json_file:

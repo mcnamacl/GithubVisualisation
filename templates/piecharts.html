@@ -6,16 +6,28 @@
     <button type="submit" onclick="" style="float: right" class="btn"><i class="fa fa-home"></i> Home</button>
 </form>
 
+<form action="/piecharts" method="POST">
+    <select name="piechartChoice">
+        <option value="0">Piechart:</option>
+        <option value="compRepo">Company Repo</option>
+        <option value="langRepo">Language Repo</option>
+        <option value="combRepo">Combined User/Repo Company</option>
+        <option value="combLang">Combined User/Repo Language</option>
+    </select>
+    <button type="submit" name="filter" class="btn">Go</button>
+</form>
+
+{% if piechart is not none %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <div class="split left">
     <div class="w3-container">
-        <canvas id="repo-comp-chart" width="600" height="600"></canvas>
+        <canvas id="pie-chart" width="600" height="600"></canvas>
     </div>
 </div>
 
 <script>
-    var data = JSON.parse('{{ compPiechart | tojson | safe }}');
+    var data = JSON.parse('{{ piechart | tojson | safe }}');
 
     names = [];
     colours = [];
@@ -27,7 +39,7 @@
         values.push(data[d]);
     }
 
-    var compChart = new Chart(document.getElementById("repo-comp-chart"), {
+    var chart = new Chart(document.getElementById("pie-chart"), {
         type: 'pie',
         data: {
             labels: names,
@@ -43,10 +55,11 @@
             maintainAspectRatio: false,
             title: {
                 display: true,
-                text: 'Company Repository Breakdown'
+                text: "{{ title }}"
             }
         }
     });
 </script>
+{% endif %}
 
 {% endblock %}
