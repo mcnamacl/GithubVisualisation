@@ -121,7 +121,6 @@ def createCombinedCompanyPieChart():
 def createCombinedLanguagePieChart():
     return readInFile("combinedLanguages.txt")
 
-
 def readInFile(fileName):
     with open(fileName) as json_file:
         return json.load(json_file)

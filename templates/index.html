@@ -11,7 +11,7 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <form action="/piecharts">
-    <button type="submit" onclick="" style="float: left" class="btn"><i class="fa fa-home"></i> Piecharts</button>
+    <button type="submit" onclick="" style="float: left" class="btn"> Piecharts</button>
 </form>
 
 <div style="text-align:center;" id="chord_chart"></div>
@@ -55,9 +55,13 @@
 
     var jsonLabels = JSON.parse('{{ labels | tojson | safe }}');
     jsonLabels = jsonLabels.reverse();
-    
-    var colors = ["#679983ff", "#77838cff", "	#e1f7d5ff", "#f1cbffff", "#ffbdbdff", "#b7effbff", "#c7f2ccff", "#eeb9a2ff", "#00c2c7ff", "#e18a7aff", "#005582ff", "#31668dff", "#d4aa78ff", "#fde725ff", "#fadbe0ff", "#abb1cfff", "#c5b9cdff", "#ffb554ff", "#9e3d64ff", "#daf8e3ff"];
 
+    var colours = []
+    for (var i = 0; i < 20; i++){
+        var tmp ='#' + Math.floor(Math.random() * 16777215).toString(16);
+        colours[i] = tmp;
+    }
+    
     var width = 720,
         height = 720,
         outerRadius = Math.min(width, height) / 2 - 10,
@@ -90,7 +94,6 @@
             .outerRadius(outerRadius)
         )
         .style("fill", "#afeeee")
-        //.style("stroke", "black")
 
     // Add the links between groups
     svg
@@ -103,7 +106,7 @@
         .attr("d", d3.ribbon()
             .radius(innerRadius)
         )
-        .style("fill", function (d) { return (colors[d.source.index]) }) // colors depend on the source group. Change to target otherwise.
+        .style("fill", function (d) { return (colours[d.source.index]) }) 
         .style("stroke", "black");
 
     svg
@@ -115,7 +118,6 @@
         .attr("class", "label")
         .attr("xlink:href", function (d) { return "#group" + d.index; })
         .text(function (d) { return console.log(jsonLabels[d.index]); })
-        //.style("fill", function (d) { return "black" });
 
 </script>
 
