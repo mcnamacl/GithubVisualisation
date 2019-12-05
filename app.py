@@ -15,10 +15,11 @@ def index():
 
 @app.route("/piecharts")
 def picecharts():
-    compPiechartVals = createCompanyPieChart()
-    langPiechartVales = createLanguagePieChart()
-    combinedPiechart = createCombinedPieChart()
-    return render_template("piecharts.html")
+    compPiechart = createRepoCompanyPieChart()
+    langPiechart = createRepoLanguagePieChart()
+    combinedCompPiechart = createCombinedCompanyPieChart()
+    combinedLangPiechart = createCombinedLanguagePieChart()
+    return render_template("piecharts.html", compPiechart=compPiechart, langPiechart=langPiechart, combinedCompPiechart=combinedCompPiechart, combinedLangPiechart=combinedLangPiechart)
 
 def createFlowMatrix():
     compLangArr = readInFile('corrCompanyLanguages.txt')
@@ -83,17 +84,17 @@ def getTopTenCompanies(compLangArr):
             break
     return topTenCompanies
 
-def createCompanyPieChart():
-    repoCompanies = readInFile('repoCompanies.txt')
-    userCompanies = readInFile('userCompanies.txt')
+def createRepoCompanyPieChart():
+    return readInFile('repoCompanies.txt')
 
-def createLanguagePieChart():
-    userLanguages = readInFile('userLanguages.txt')
-    repoLanguages = readInFile('repoLanguages.txt')
+def createRepoLanguagePieChart():
+    return readInFile('repoLanguages.txt')
 
-def createCombinedPieChart():
-    combinedLanguages = readInFile('combinedLanguages.txt')
-    combinedCompanies = readInFile('combinedCompanies.txt')
+def createCombinedCompanyPieChart():
+    return readInFile('combinedCompanies.txt')
+
+def createCombinedLanguagePieChart():
+    return readInFile('combinedLanguages.txt')
 
 def readInFile(fileName):
     with open(fileName) as json_file:

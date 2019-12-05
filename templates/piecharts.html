@@ -6,4 +6,47 @@
     <button type="submit" onclick="" style="float: right" class="btn"><i class="fa fa-home"></i> Home</button>
 </form>
 
-{% endblock %} 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+<div class="split left">
+    <div class="w3-container">
+        <canvas id="repo-comp-chart" width="600" height="600"></canvas>
+    </div>
+</div>
+
+<script>
+    var data = JSON.parse('{{ compPiechart | tojson | safe }}');
+
+    names = [];
+    colours = [];
+    values = []
+    for (d in data){
+        names.push(d);
+        var tmp ='#' + Math.floor(Math.random() * 16777215).toString(16)
+        colours.push(tmp);
+        values.push(data[d]);
+    }
+
+    var compChart = new Chart(document.getElementById("repo-comp-chart"), {
+        type: 'pie',
+        data: {
+            labels: names,
+            datasets: [
+                {
+                    backgroundColor: colours,
+                    data: values
+                }
+            ],
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: 'Company Repository Breakdown'
+            }
+        }
+    });
+</script>
+
+{% endblock %}

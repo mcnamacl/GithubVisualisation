@@ -9,6 +9,11 @@
     <button type="submit" onclick="" style="float: right" class="btn"><i class="fa fa-home"></i> Home</button>
 </form>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<form action="/piecharts">
+    <button type="submit" onclick="" style="float: left" class="btn"><i class="fa fa-home"></i> Piecharts</button>
+</form>
+
 <div style="text-align:center;" id="chord_chart"></div>
 
 <script>
@@ -49,6 +54,7 @@
     }
 
     var jsonLabels = JSON.parse('{{ labels | tojson | safe }}');
+    jsonLabels = jsonLabels.reverse();
     
     var colors = ["#679983ff", "#77838cff", "	#e1f7d5ff", "#f1cbffff", "#ffbdbdff", "#b7effbff", "#c7f2ccff", "#eeb9a2ff", "#00c2c7ff", "#e18a7aff", "#005582ff", "#31668dff", "#d4aa78ff", "#fde725ff", "#fadbe0ff", "#abb1cfff", "#c5b9cdff", "#ffb554ff", "#9e3d64ff", "#daf8e3ff"];
 
