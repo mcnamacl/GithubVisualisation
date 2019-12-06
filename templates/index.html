@@ -2,7 +2,27 @@
 
 {% block main %}
 
-<script src="https://d3js.org/d3.v4.js"></script>
+<style>
+    #circle circle {
+        fill: none;
+        pointer-events: all;
+    }
+
+    .group path {
+        fill-opacity: .5;
+    }
+
+    path.chord {
+        stroke: #000;
+        stroke-width: .25px;
+    }
+
+    #circle:hover path.fade {
+        display: none;
+    }
+</style>
+
+<script src="https://d3js.org/d3.v2.min.js?2.8.1"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <form action="/">
@@ -17,107 +37,97 @@
 <div style="text-align:center;" id="chord_chart"></div>
 
 <script>
-    topRightMatrix = JSON.parse('{{ matrix | tojson | safe }}');
-
-    var matrix = new Array(20);
-
-    for (var i = 0; i < matrix.length; i++) {
-        matrix[i] = new Array(20);
-    }
-
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 10; j++) {
-            matrix[i][j] = 0;
-        }
-    }
-
-    for (var i = 10; i < 20; i++) {
-        for (var j = 10; j < 20; j++) {
-            matrix[i][j] = 0;
-        }
-    }
-
-    var index = 0;
-    for (x in topRightMatrix) {
-        for (var j = 10; j < 20; j++) {
-            matrix[index][j] = topRightMatrix[x][0][j - 10];
-        }
-        index++;
-    }
-
-    var index = 10;
-    for (x in topRightMatrix) {
-        for (var j = 0; j < 10; j++) {
-            matrix[index][j] = topRightMatrix[x][0][j];
-        }
-        index++;
-    }
-
-    var jsonLabels = JSON.parse('{{ labels | tojson | safe }}');
-    jsonLabels = jsonLabels.reverse();
-
-    var colours = []
-    for (var i = 0; i < 20; i++){
-        var tmp ='#' + Math.floor(Math.random() * 16777215).toString(16);
-        colours[i] = tmp;
-    }
-    
     var width = 720,
         height = 720,
         outerRadius = Math.min(width, height) / 2 - 10,
         innerRadius = outerRadius - 24;
 
-    var svg = d3.select("#chord_chart")
-        .append("svg")
+    var formatPercent = d3.format(".1%");
+
+    var arc = d3.svg.arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
+
+    var layout = d3.layout.chord()
+        .padding(.04)
+        .sortSubgroups(d3.descending)
+        .sortChords(d3.ascending);
+
+    var path = d3.svg.chord()
+        .radius(innerRadius);
+
+    var svg = d3.select("body").append("svg")
         .attr("width", width)
         .attr("height", height)
         .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
+        .attr("id", "circle")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
-    var res = d3.chord()
-        .padAngle(0.05)
-        .sortSubgroups(d3.descending)
-        (matrix)
+    svg.append("circle")
+        .attr("r", outerRadius);
 
-    // add the groups on the outer part of the circle
-    svg
-        .datum(res)
-        .append("g")
-        .selectAll("g")
-        .data(function (d) { return d.groups; })
-        .enter()
-        .append("g")
-        .append("path")
-        .attr("d", d3.arc()
-            .innerRadius(innerRadius)
-            .outerRadius(outerRadius)
-        )
-        .style("fill", "#afeeee")
+    d3.csv("complang.csv", function (complang) {
+        d3.json("matrix.json", function (matrix) {
 
-    // Add the links between groups
-    svg
-        .datum(res)
-        .append("g")
-        .selectAll("path")
-        .data(function (d) { return d; })
-        .enter()
-        .append("path")
-        .attr("d", d3.ribbon()
-            .radius(innerRadius)
-        )
-        .style("fill", function (d) { return (colours[d.source.index]) }) 
-        .style("stroke", "black");
+            // Compute the chord layout.
+            layout.matrix(matrix);
 
-    svg
-        .datum(res)
-        .append("text")
-        .attr("dx", 4)
-        .attr("dy", 35)
-        .append("textPath")
-        .attr("class", "label")
-        .attr("xlink:href", function (d) { return "#group" + d.index; })
-        .text(function (d) { return console.log(jsonLabels[d.index]); })
+            // Add a group per neighborhood.
+            var group = svg.selectAll(".group")
+                .data(layout.groups)
+                .enter().append("g")
+                .attr("class", "group")
+                .on("mouseover", mouseover);
+            // Add a mouseover title.
+            // group.append("title").text(function(d, i) {
+            // return complang[i].name + ": " + formatPercent(d.value) + " of origins";
+            // });
+
+            // Add the group arc.
+            var groupPath = group.append("path")
+                .attr("id", function (d, i) { return "group" + i; })
+                .attr("d", arc)
+                .style("fill", function (d, i) { return complang[i].color; });
+
+            // Add a text label.
+            var groupText = group.append("text")
+                .attr("x", 6)
+                .attr("dy", 15);
+
+            groupText.append("textPath")
+                .attr("xlink:href", function (d, i) { return "#group" + i; })
+                .text(function (d, i) { return complang[i].name; });
+
+            // Remove the labels that don't fit. :(
+            groupText.filter(function (d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
+                .remove();
+
+            // Add the chords.
+            var chord = svg.selectAll(".chord")
+                .data(layout.chords)
+                .enter().append("path")
+                .attr("class", "chord")
+                .style("fill", function (d) { return complang[d.source.index].color; })
+                .attr("d", path);
+
+            // Add an elaborate mouseover title for each chord.
+            chord.append("title").text(function (d) {
+                return complang[d.source.index].name
+                    + " → " + complang[d.target.index].name
+                    + ": " + formatPercent(d.source.value)
+                    + "\n" + complang[d.target.index].name
+                    + " → " + complang[d.source.index].name
+                    + ": " + formatPercent(d.target.value);
+            });
+
+            function mouseover(d, i) {
+                chord.classed("fade", function (p) {
+                    return p.source.index != i
+                        && p.target.index != i;
+                });
+            }
+        });
+    });
 
 </script>
 

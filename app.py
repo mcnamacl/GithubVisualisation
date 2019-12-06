@@ -4,6 +4,8 @@ from collections import defaultdict, OrderedDict
 import collections
 import sys
 import json
+import numpy
+import random
 
 app = Flask(__name__)
 
@@ -11,7 +13,11 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     matrix, xAxis, yAxis = createFlowMatrix()
+    with open('matrix.txt', 'w') as outfile:
+        json.dump(matrix, outfile)
     labels = xAxis + yAxis
+    labels.reverse()
+    createLabelsColoursCSV(labels)
     return render_template("index.html", matrix=matrix, labels=labels)
 
 
@@ -60,8 +66,9 @@ def createFlowMatrix():
         rowIndex = rowIndex + 1
         jsonCompanies.append(comp)
         gotLang = True
-
-    return jsonMatrix, jsonCompanies, jsonLanguages
+    
+    finalMatrix = createFinalMatrix(jsonMatrix)
+    return finalMatrix, jsonCompanies, jsonLanguages
 
 
 # Gets top ten language by use per company
@@ -105,6 +112,41 @@ def getTopTenCompanies(compLangArr):
             break
     return topTenCompanies
 
+def createFinalMatrix(matrix):
+    finalMatrix =[[0] * 20 for i in range(20)]
+    index = 0
+    for x in matrix:
+        j = 10
+        while j < 20:
+            finalMatrix[index][j] = matrix[x][0][j - 10]
+            j = j + 1
+        index = index + 1
+
+    index = 10
+    for x in matrix:
+        j = 0
+        while j < 10:
+            finalMatrix[index][j] = matrix[x][0][j]
+            j = j + 1
+        index = index + 1
+
+    return finalMatrix
+
+def createLabelsColoursCSV(labels):
+    finalLabels =[[0] * 2 for i in range(20)]
+    index = 0
+    for label in labels:
+        finalLabels[index][0] = label
+        finalLabels[index][1] = getRandomHex()
+        index = index + 1
+    
+    a = numpy.asarray(finalLabels)
+    numpy.savetxt("complang.csv", a, delimiter=",", fmt='%s', header="name,color")
+
+def getRandomHex():
+    random_number = random.randint(0,16777215)
+    hex_number = str(hex(random_number))
+    return '#'+ hex_number[2:]
 
 def createRepoCompanyPieChart():
     return readInFile("repoCompanies.txt")
