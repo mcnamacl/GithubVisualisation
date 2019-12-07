@@ -14,7 +14,6 @@ app = Flask(__name__)
 def index():
     matrix, xAxis, yAxis = createFlowMatrix()
     labels = xAxis + yAxis
-    labels.reverse()
     complang = createLabelsColoursCSV(labels)
     return render_template("index.html", matrix=matrix, complang=complang)
 
@@ -52,18 +51,22 @@ def createFlowMatrix():
     for comp in topTenCompanies:
         jsonMatrix[str(rowIndex)] = []
         rowList = []
+        print(comp, file=sys.stderr)
         for lang in topTenLanguages:
             if lang in compLangArr[comp]:
                 num = compLangArr[comp][lang]
                 rowList.append(num)
+                print(lang + " " + str(num), file=sys.stderr)
             else:
                 rowList.append(0)
+                print(lang, file=sys.stderr)
             if not gotLang:
                 jsonLanguages.append(lang)
         jsonMatrix[str(rowIndex)].append(rowList)
         rowIndex = rowIndex + 1
         jsonCompanies.append(comp)
         gotLang = True
+        print("\n", file=sys.stderr)
 
     finalMatrix = createFinalMatrix(jsonMatrix)
     return finalMatrix, jsonCompanies, jsonLanguages
@@ -121,22 +124,20 @@ def createFinalMatrix(matrix):
             j = j + 1
         index = index + 1
 
-    index = 10
+    index = 0
     for x in matrix:
-        j = 0
-        while j < 10:
-            finalMatrix[index][j] = matrix[x][0][j]
+        j = 10
+        while j < 20:
+            finalMatrix[j][index] = matrix[x][0][j - 10]
             j = j + 1
         index = index + 1
-
+        
     return finalMatrix
 
 
 def createLabelsColoursCSV(labels):
     finalLabels = [[0] * 2 for i in range(21)]
     index = 0
-    # finalLabels[0][0] = "name"
-    # finalLabels[0][1] = "color"
     for label in labels:
         finalLabels[index][0] = label
         finalLabels[index][1] = getRandomHex()
