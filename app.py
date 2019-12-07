@@ -13,12 +13,10 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     matrix, xAxis, yAxis = createFlowMatrix()
-    with open('matrix.txt', 'w') as outfile:
-        json.dump(matrix, outfile)
     labels = xAxis + yAxis
     labels.reverse()
-    createLabelsColoursCSV(labels)
-    return render_template("index.html", matrix=matrix, labels=labels)
+    complang = createLabelsColoursCSV(labels)
+    return render_template("index.html", matrix=matrix, complang=complang)
 
 
 @app.route("/piecharts", methods=["POST", "GET"])
@@ -66,7 +64,7 @@ def createFlowMatrix():
         rowIndex = rowIndex + 1
         jsonCompanies.append(comp)
         gotLang = True
-    
+
     finalMatrix = createFinalMatrix(jsonMatrix)
     return finalMatrix, jsonCompanies, jsonLanguages
 
@@ -112,8 +110,9 @@ def getTopTenCompanies(compLangArr):
             break
     return topTenCompanies
 
+
 def createFinalMatrix(matrix):
-    finalMatrix =[[0] * 20 for i in range(20)]
+    finalMatrix = [[0] * 20 for i in range(20)]
     index = 0
     for x in matrix:
         j = 10
@@ -132,21 +131,25 @@ def createFinalMatrix(matrix):
 
     return finalMatrix
 
+
 def createLabelsColoursCSV(labels):
-    finalLabels =[[0] * 2 for i in range(20)]
+    finalLabels = [[0] * 2 for i in range(21)]
     index = 0
+    # finalLabels[0][0] = "name"
+    # finalLabels[0][1] = "color"
     for label in labels:
         finalLabels[index][0] = label
         finalLabels[index][1] = getRandomHex()
         index = index + 1
-    
-    a = numpy.asarray(finalLabels)
-    numpy.savetxt("complang.csv", a, delimiter=",", fmt='%s', header="name,color")
+
+    return finalLabels
+
 
 def getRandomHex():
-    random_number = random.randint(0,16777215)
+    random_number = random.randint(0, 16777215)
     hex_number = str(hex(random_number))
-    return '#'+ hex_number[2:]
+    return "#" + hex_number[2:]
+
 
 def createRepoCompanyPieChart():
     return readInFile("repoCompanies.txt")
@@ -162,6 +165,7 @@ def createCombinedCompanyPieChart():
 
 def createCombinedLanguagePieChart():
     return readInFile("combinedLanguages.txt")
+
 
 def readInFile(fileName):
     with open(fileName) as json_file:

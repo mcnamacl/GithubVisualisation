@@ -66,68 +66,76 @@
     svg.append("circle")
         .attr("r", outerRadius);
 
-    d3.csv("complang.csv", function (complang) {
-        d3.json("matrix.json", function (matrix) {
+    complang = JSON.parse('{{ complang | tojson | safe }}');
+    // var fields = Object.keys(json[0])
+    // var replacer = function (key, value) { return value === null ? '' : value }
+    // var complang = json.map(function (row) {
+    //     return fields.map(function (fieldName) {
+    //         return JSON.stringify(row[fieldName], replacer)
+    //     }).join(',')
+    // })
 
-            // Compute the chord layout.
-            layout.matrix(matrix);
+    console.log(complang)
 
-            // Add a group per neighborhood.
-            var group = svg.selectAll(".group")
-                .data(layout.groups)
-                .enter().append("g")
-                .attr("class", "group")
-                .on("mouseover", mouseover);
-            // Add a mouseover title.
-            // group.append("title").text(function(d, i) {
-            // return complang[i].name + ": " + formatPercent(d.value) + " of origins";
-            // });
+    matrix = JSON.parse("{{ matrix | tojson | safe }}");
+    console.log(matrix);
+    // Compute the chord layout.
+    layout.matrix(matrix);
 
-            // Add the group arc.
-            var groupPath = group.append("path")
-                .attr("id", function (d, i) { return "group" + i; })
-                .attr("d", arc)
-                .style("fill", function (d, i) { return complang[i].color; });
+    // Add a group per neighborhood.
+    var group = svg.selectAll(".group")
+        .data(layout.groups)
+        .enter().append("g")
+        .attr("class", "group")
+        .on("mouseover", mouseover);
+    // Add a mouseover title.
+    // group.append("title").text(function(d, i) {
+    // return complang[i].name + ": " + formatPercent(d.value) + " of origins";
+    // });
 
-            // Add a text label.
-            var groupText = group.append("text")
-                .attr("x", 6)
-                .attr("dy", 15);
+    // Add the group arc.
+    var groupPath = group.append("path")
+        .attr("id", function (d, i) { return "group" + i; })
+        .attr("d", arc)
+        .style("fill", function (d, i) { return complang[i][1]; });
 
-            groupText.append("textPath")
-                .attr("xlink:href", function (d, i) { return "#group" + i; })
-                .text(function (d, i) { return complang[i].name; });
+    // Add a text label.
+    var groupText = group.append("text")
+        .attr("x", 6)
+        .attr("dy", 15);
 
-            // Remove the labels that don't fit. :(
-            groupText.filter(function (d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
-                .remove();
+    groupText.append("textPath")
+        .attr("xlink:href", function (d, i) { return "#group" + i; })
+        .text(function (d, i) { return complang[i][0]; });
 
-            // Add the chords.
-            var chord = svg.selectAll(".chord")
-                .data(layout.chords)
-                .enter().append("path")
-                .attr("class", "chord")
-                .style("fill", function (d) { return complang[d.source.index].color; })
-                .attr("d", path);
+    // Remove the labels that don't fit. :(
+    groupText.filter(function (d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
+        .remove();
 
-            // Add an elaborate mouseover title for each chord.
-            chord.append("title").text(function (d) {
-                return complang[d.source.index].name
-                    + " → " + complang[d.target.index].name
-                    + ": " + formatPercent(d.source.value)
-                    + "\n" + complang[d.target.index].name
-                    + " → " + complang[d.source.index].name
-                    + ": " + formatPercent(d.target.value);
-            });
+    // Add the chords.
+    var chord = svg.selectAll(".chord")
+        .data(layout.chords)
+        .enter().append("path")
+        .attr("class", "chord")
+        .style("fill", function (d) { return complang[d.source.index].color; })
+        .attr("d", path);
 
-            function mouseover(d, i) {
-                chord.classed("fade", function (p) {
-                    return p.source.index != i
-                        && p.target.index != i;
-                });
-            }
-        });
+    // Add an elaborate mouseover title for each chord.
+    chord.append("title").text(function (d) {
+        return complang[d.source.index].name
+            + " → " + complang[d.target.index].name
+            + ": " + formatPercent(d.source.value)
+            + "\n" + complang[d.target.index].name
+            + " → " + complang[d.source.index].name
+            + ": " + formatPercent(d.target.value);
     });
+
+    function mouseover(d, i) {
+        chord.classed("fade", function (p) {
+            return p.source.index != i
+                && p.target.index != i;
+        });
+    }
 
 </script>
 
