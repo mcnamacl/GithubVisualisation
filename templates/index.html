@@ -37,12 +37,10 @@
 <div style="text-align:center;" id="chord_chart"></div>
 
 <script>
-    var width = 720,
-        height = 720,
+    var width = 620,
+        height = 620,
         outerRadius = Math.min(width, height) / 2 - 10,
         innerRadius = outerRadius - 24;
-
-    var formatPercent = d3.format(".1%");
 
     var arc = d3.svg.arc()
         .innerRadius(innerRadius)
@@ -79,10 +77,6 @@
         .enter().append("g")
         .attr("class", "group")
         .on("mouseover", mouseover);
-    // Add a mouseover title.
-    group.append("title").text(function(d, i) {
-    return complang[i].name + ": " + formatPercent(d.value) + " of origins";
-    });
 
     // Add the group arc.
     var groupPath = group.append("path")
@@ -100,8 +94,8 @@
         .text(function (d, i) { return complang[i][0]; });
 
     // Remove the labels that don't fit. :(
-    // groupText.filter(function (d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
-    //     .remove();
+    groupText.filter(function (d, i) { return groupPath[0][i].getTotalLength() / 2 - 16 < this.getComputedTextLength(); })
+        .remove();
 
     // Add the chords.
     var chord = svg.selectAll(".chord")
@@ -115,10 +109,7 @@
     chord.append("title").text(function (d) {
         return complang[d.source.index][0]
             + " → " + complang[d.target.index][0]
-            + ": " + formatPercent(d.source.value)
-            + "\n" + complang[d.target.index][0]
-            + " → " + complang[d.source.index][0]
-            + ": " + formatPercent(d.target.value);
+            + ": " + d.source.value
     });
 
     function mouseover(d, i) {

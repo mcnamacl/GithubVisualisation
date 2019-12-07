@@ -36,10 +36,10 @@ def getFollowers(user):
     return followers
 
 def getTopRepos():
-    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:300]
+    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:500]
 
 def getTopUsersByFollowers():
-    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:300]
+    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:500]
 
 def languagesInRepos(repos):
     languages = {}
@@ -57,7 +57,10 @@ def languagesByUsers(topUsers):
     userLanguages = {}
     for topUser in topUsers:
         language = getUserTopLanguage(topUser)
-        language = language[0]
+        if language is None:
+            language = "None"
+        else:
+            language = language[0]
         if language not in userLanguages:
             userLanguages[language] = 1
         else:

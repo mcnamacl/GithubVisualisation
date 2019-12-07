@@ -51,22 +51,18 @@ def createFlowMatrix():
     for comp in topTenCompanies:
         jsonMatrix[str(rowIndex)] = []
         rowList = []
-        print(comp, file=sys.stderr)
         for lang in topTenLanguages:
             if lang in compLangArr[comp]:
                 num = compLangArr[comp][lang]
                 rowList.append(num)
-                print(lang + " " + str(num), file=sys.stderr)
             else:
                 rowList.append(0)
-                print(lang, file=sys.stderr)
             if not gotLang:
                 jsonLanguages.append(lang)
         jsonMatrix[str(rowIndex)].append(rowList)
         rowIndex = rowIndex + 1
         jsonCompanies.append(comp)
         gotLang = True
-        print("\n", file=sys.stderr)
 
     finalMatrix = createFinalMatrix(jsonMatrix)
     return finalMatrix, jsonCompanies, jsonLanguages
