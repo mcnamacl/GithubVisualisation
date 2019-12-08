@@ -20,7 +20,7 @@ def index():
             num = newNum
     matrix, xAxis, yAxis = createFlowMatrix(num)
     labels = xAxis + yAxis
-    complang = createLabelsColoursCSV(labels, num)
+    complang = createLabelsColours(labels, num)
     return render_template("index.html", matrix=matrix, complang=complang)
 
 
@@ -144,7 +144,7 @@ def createFinalMatrix(matrix, finalNum):
     return finalMatrix
 
 
-def createLabelsColoursCSV(labels, finalNum):
+def createLabelsColours(labels, finalNum):
     finalLabels = [[0] * 2 for i in range(finalNum * 2)]
     index = 0
     for label in labels:
