@@ -42,7 +42,28 @@ Step 2:
 I get the top X number of languages by mention in the file and the top X number of companies by language use variety. The default being X = 10. 
 
 Step 3:
-Using this information I am able to create the flow matrix showing the flow between company and language.
+Using this information I am able to create the flow matrix showing the flow between company and language. 
+Example of flow matrix with 3 values for companies (A, B, C) and 3 values (X, Y, Z) for languages.
+  A   B   C   X   Y   Z
+A 0 | 0 | 0 | 3 | 5 | 6 
+B 0 | 0 | 0 | 1 | 0 | 7 
+C 0 | 0 | 0 | 2 | 8 | 1 
+X 3 | 1 | 2 | 0 | 0 | 0 
+Y 5 | 0 | 6 | 0 | 0 | 0 
+Z 6 | 7 | 1 | 0 | 0 | 0 
+ 
+Flow being - 
+A -> X = 3
+A -> Y = 5
+A -> Z = 6
+
+B -> X = 1
+B -> Y = 0
+B -> Z = 7
+
+C -> X = 2
+C -> Y = 6
+C -> Z = 1
 
 Step 4:
 I set up the labels associated with the flow matrix and randomly generate a colour to go with the label.
