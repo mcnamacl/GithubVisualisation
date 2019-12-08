@@ -2,6 +2,7 @@
 
 The application runs on localhost:5000 by executing python -m flask run while in the source folder. 
 
+## First Access of Github API
 The commit relating to first access of the github API: efc861c76652afacc6b0802f1f129cc7f372268a.
 
 -----------------------------------------------------------------------------
@@ -52,7 +53,7 @@ X 3 | 1 | 2 | 0 | 0 | 0  <br />
 Y 5 | 0 | 6 | 0 | 0 | 0  <br />
 Z 6 | 7 | 1 | 0 | 0 | 0  <br />
  
-Flow being - 
+Flow being -  <br />
 A -> X = 3  <br />
 A -> Y = 5  <br />
 A -> Z = 6  <br />
@@ -71,14 +72,17 @@ I set up the labels associated with the flow matrix and randomly generate a colo
 Both arrays are sent to the front end to be dealt with and displayed a combination of Javascript, CSS and HTML.
 
 # Chord Chart Display
+Default display of correlation between 10 companies and 10 languages.
 
 ![](ChordDiagramDisplay.gif)
 
 # Chord Chart Increased Correlations
+Dynamic display of any number of correlations between the numbers of 1 - 30.
 
 ![](IncreasedChordDiagramDisplay.gif)
 
 # Extra Functionality
+Further breakdown provided by piecharts containing information gained through the creation of the chord chart.
 
 ![](Piecharts.gif)
 
