@@ -48,3 +48,17 @@ Step 4:
 I set up the labels associated with the flow matrix and randomly generate a colour to go with the label.
 
 Both arrays are sent to the front end to be dealt with and displayed a combination of Javascript, CSS and HTML.
+
+# Chord Chart Display
+
+![](ChordDiagramDisplay.gif)
+
+# Chord Chart Increased Correlations
+
+![](IncreasedChordDiagramDisplay.gif)
+
+# Extra Functionality
+
+![](Piecharts.gif)
+
+
