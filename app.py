@@ -14,6 +14,7 @@ app = Flask(__name__)
 def index():
     num = 10
     newNum = request.form.get("numOfCorr")
+    # If the user requests a new amount of correlations.
     if newNum is not None:
         newNum = int(newNum)
         if isNumber(newNum) and newNum > 0 and newNum < 30:
@@ -28,6 +29,7 @@ def index():
 def picecharts():
     piechart = None
     title = ""
+    # Generates the type of piechart requested.
     if request.method == "POST":
         piechartType = request.form.get("piechartChoice")
         if piechartType == "compRepo":
@@ -51,6 +53,7 @@ def isNumber(s):
     except ValueError:
         return False
 
+# Generates the final flow matrix to be displayed via the chord chart.
 def createFlowMatrix(finalNum):
     compLangArr = readInFile("corrCompanyLanguages.txt")
     topXLanguages = getTopXNumLanguages(compLangArr, finalNum)
@@ -121,7 +124,9 @@ def getTopXNumCompanies(compLangArr, finalNum):
             break
     return topXCompanies
 
-
+# The matrix is a square matrix where the top right and bottom left 
+# quadrants contain the flow values and the other two quadrants
+# are made up of 0s.
 def createFinalMatrix(matrix, finalNum):
     rangeNum = finalNum * 2
     finalMatrix = [[0] * rangeNum for i in range(rangeNum)]
@@ -143,7 +148,7 @@ def createFinalMatrix(matrix, finalNum):
         
     return finalMatrix
 
-
+# Creates a 2d list containing labels and their associated colour.
 def createLabelsColours(labels, finalNum):
     finalLabels = [[0] * 2 for i in range(finalNum * 2)]
     index = 0
@@ -154,7 +159,7 @@ def createLabelsColours(labels, finalNum):
 
     return finalLabels
 
-
+# Generates a random colour.
 def getRandomHex():
     random_number = random.randint(0, 16777215)
     hex_number = str(hex(random_number))

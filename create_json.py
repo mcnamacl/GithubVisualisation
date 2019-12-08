@@ -7,40 +7,15 @@ import json
 g = Github("mcnamacl", "password")
 userName = g.get_user().name
 
-def corrFollowersRepos(user):
-    followers = getFollowers(user)
-    result = {}
-    for followerIt in followers:
-        follower = followers[followerIt]
-        result[str(follower)] = {}
-        numFollower = follower.get_followers().totalCount
-        numRepo = follower.get_repos().totalCount
-        tmp = {numFollower : numRepo}
-        result[str(follower)] = tmp
-    print(json.dumps(result), file=sys.stderr)
-
-def getRepos(user):
-    repos = {}
-    index = 0
-    for repo in user.get_repos():
-        repos[str(index)] = repo.name
-        index = index + 1
-    return repos
-
-def getFollowers(user):
-    followers = {}
-    index = 0
-    for follower in user.get_followers():
-        followers[str(index)] = follower
-        index = index + 1
-    return followers
-
+# Returns the top 300 repositories by number of stars.
 def getTopRepos():
-    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:500]
+    return g.search_repositories(query='stars:>=500', sort='stars', order='desc')[:300]
 
+# Returns the top 300 users by number of users.
 def getTopUsersByFollowers():
-    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:500]
+    return g.search_users(query='followers:>=1000', sort='followers', order='desc')[:300]
 
+# Creates a dictionary of languages and number of times used by repos.
 def languagesInRepos(repos):
     languages = {}
     for repo in repos:
@@ -53,6 +28,7 @@ def languagesInRepos(repos):
             languages[language] = num
     return languages
 
+# Creates a dictionary of languages and number of times used by users. 
 def languagesByUsers(topUsers):
     userLanguages = {}
     for topUser in topUsers:
@@ -69,6 +45,7 @@ def languagesByUsers(topUsers):
             userLanguages[language] = num
     return userLanguages
 
+# Gets the top language used by a user from 10 of their repos.
 def getUserTopLanguage(user):
     if user.get_repos().totalCount > 10:
         repos = user.get_repos()[:10]
@@ -81,6 +58,7 @@ def getUserTopLanguage(user):
         sortedLanguages = OrderedDict(sorted(languages.items(), key=lambda x: x[1], reverse = True))
         return sortedLanguages.popitem()
 
+# Creates dictionary of companies and the number of times they are associated with the top repos.
 def getRepoTopCompanies(repos):
     companies = {}
     for repo in repos:
@@ -93,6 +71,7 @@ def getRepoTopCompanies(repos):
             companies[company] = num
     return companies
 
+# Creates a dictionary of companies and number of times they are associated with the top users.
 def getUserTopCompanies(topUsers):
     companies = {}
     for user in topUsers:
@@ -113,9 +92,9 @@ def getCompanyName(company):
     company = company.replace('Organization(login=\"', '')
     return company.replace('\")', '')
 
+# Creates correlation dictionary between company and languages used.
 def getCompanyLanguages(topRepos, topUsers):
     compLang = {}
-
     for repo in topRepos:
         company = getCompanyName(str(repo.organization))
         language = repo.language
@@ -152,7 +131,7 @@ def getCompanyLanguages(topRepos, topUsers):
 
     return compLang
 
-def chordChart():
+def main():
     topRepos = getTopRepos()
     topUsers = getTopUsersByFollowers()
 
@@ -198,4 +177,4 @@ def chordChart():
         json.dump(corrCompanyLanguages, outfile)    
 
 if __name__ == '__main__':
-    chordChart()
+    main()
