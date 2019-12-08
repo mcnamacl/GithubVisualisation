@@ -44,14 +44,16 @@ I get the top X number of languages by mention in the file and the top X number 
 
 Step 3:
 Using this information I am able to create the flow matrix showing the flow between company and language. 
-Example of flow matrix with 3 values for companies (A, B, C) and 3 values (X, Y, Z) for languages.
-  A   B   C   X   Y   Z  <br />
+Example of flow matrix with 3 values for companies (A, B, C) and 3 values (X, Y, Z) for languages. <br /> 
+<pre>
+  A | B | C | X | Y | Z  <br />
 A 0 | 0 | 0 | 3 | 5 | 6  <br />
 B 0 | 0 | 0 | 1 | 0 | 7  <br />
 C 0 | 0 | 0 | 2 | 8 | 1  <br />
 X 3 | 1 | 2 | 0 | 0 | 0  <br />
 Y 5 | 0 | 6 | 0 | 0 | 0  <br />
 Z 6 | 7 | 1 | 0 | 0 | 0  <br />
+</pre>
  
 Flow being -  <br />
 A -> X = 3  <br />
