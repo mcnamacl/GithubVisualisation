@@ -25,20 +25,27 @@
 <script src="https://d3js.org/d3.v2.min.js?2.8.1"></script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<form action="/">
+<form action="/" method="POST">
     <button type="submit" onclick="" style="float: right" class="btn"><i class="fa fa-home"></i> Home</button>
 </form>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<form action="/piecharts">
-    <button type="submit" onclick="" style="float: left" class="btn"> Piecharts</button>
+<form action="/" method="POST">
+    <div style="float:right;">
+        <input type="text" name="numOfCorr" placeholder="Number of Correlations">
+        <button type="submit" onclick="">Go</button>
+    </div>
 </form>
 
-<div style="text-align:center;" id="chord_chart"></div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<form action="/piecharts" method="POST">
+    <button type="submit" onclick="" style="text-align:left" class="btn"> Piecharts</button>
+</form>
+
+<div style="text-align:center" id="chord_chart"></div>
 
 <script>
-    var width = 620,
-        height = 620,
+    var width = 720,
+        height = 720,
         outerRadius = Math.min(width, height) / 2 - 10,
         innerRadius = outerRadius - 24;
 
@@ -77,6 +84,10 @@
         .enter().append("g")
         .attr("class", "group")
         .on("mouseover", mouseover);
+
+    group.append("title").text(function (d, i) {
+        return complang[i][0];
+    });
 
     // Add the group arc.
     var groupPath = group.append("path")
